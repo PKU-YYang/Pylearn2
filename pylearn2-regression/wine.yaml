@@ -1,0 +1,68 @@
+!obj:pylearn2.train.Train {
+    dataset: &train !obj:winequality_red.load_data {
+        start: 0,
+        stop: 1024
+    },
+    model: !obj:pylearn2.models.mlp.MLP {
+        layers: [
+                 !obj:pylearn2.models.mlp.RectifiedLinear {
+                     layer_name: 'h0',
+                     dim: 1200,
+                     irange: .05,
+                     max_col_norm: 1.9365,
+                 },
+                 !obj:pylearn2.models.mlp.RectifiedLinear {
+                     layer_name: 'h1',
+                     dim: 1200,
+                     irange: .05,
+                     max_col_norm: 1.9365,
+                 },
+                 !obj:pylearn2.models.mlp.LinearGaussian {
+                     init_bias: !obj:pylearn2.models.mlp.mean_of_targets { 
+                       dataset: *train },
+                     init_beta: !obj:pylearn2.models.mlp.beta_from_targets { 
+                       dataset: *train },
+                     min_beta: 1.,
+                     max_beta: 100.,
+                     beta_lr_scale: 1.,
+                     dim: 1,
+                     # max_col_norm: 1.9365,
+                     layer_name: 'y',
+                     irange: .005
+                 }
+                ],
+        nvis: 11,
+    },
+    algorithm: !obj:pylearn2.training_algorithms.bgd.BGD {
+        line_search_mode: 'exhaustive',
+        batch_size: 1024,
+        conjugate: 1,
+        reset_conjugate: 0,
+        reset_alpha: 0,
+        updates_per_batch: 10,
+        monitoring_dataset:
+            {
+                'train' : *train,
+                'valid' : !obj:winequality_red.load_data {
+                            start: 1024,
+                            stop: 1280
+                          },
+                'test'  : !obj:winequality_red.load_data {
+                            start: 1280,
+                            stop: 1599
+                          }
+            },
+        termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
+            channel_name: "valid_y_mse",
+            prop_decrease: 0.,
+            N: 100
+        },
+    },
+    extensions: [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_y_mse',
+             save_path: "${PYLEARN2_TRAIN_FILE_FULL_STEM}_best.pkl"
+        },
+    ],
+    save_freq: 1
+}
