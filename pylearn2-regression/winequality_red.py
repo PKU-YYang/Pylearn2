@@ -8,7 +8,7 @@ import numpy as np
 # We'll need the DenseDesignMatrix class to return the data
 from pylearn2.datasets.dense_design_matrix import DenseDesignMatrix
 
-def load_data(start, stop):
+def load_data(start, stop,path):
     """
     Loads the red wine quality dataset from:
 
@@ -32,7 +32,7 @@ def load_data(start, stop):
         The start and stop parameters are useful for splitting the data into
         train, validation, and test data.
     """
-    with open('winequality-red.csv', 'r') as f:
+    with open(path, 'r') as f:
         reader = csv.reader(f, delimiter=';')
         X = []
         y = []

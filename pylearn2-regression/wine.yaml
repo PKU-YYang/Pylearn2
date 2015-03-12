@@ -1,7 +1,8 @@
 !obj:pylearn2.train.Train {
     dataset: &train !obj:winequality_red.load_data {
         start: 0,
-        stop: 1024
+        stop: 1024,
+        path: '../pylearn2-regression/winequality-red.csv'
     },
     model: !obj:pylearn2.models.mlp.MLP {
         layers: [
@@ -45,11 +46,13 @@
                 'train' : *train,
                 'valid' : !obj:winequality_red.load_data {
                             start: 1024,
-                            stop: 1280
+                            stop: 1280,
+                            path: '../pylearn2-regression/winequality-red.csv'
                           },
                 'test'  : !obj:winequality_red.load_data {
                             start: 1280,
-                            stop: 1599
+                            stop: 1599,
+                            path: '../pylearn2-regression/winequality-red.csv'
                           }
             },
         termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
