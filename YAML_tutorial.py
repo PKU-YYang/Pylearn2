@@ -4,8 +4,7 @@ YAML is a human-readable dataset serialization scripting language,for defining a
 
 
 YAML不可以用双引号，不可以用\t，只能用空格
-
-
+每行语句要注意空格和逗号，尤其是冒口以后
 
 #构造YAML !pkl/!import/!obj：
 !obj:yaml_tutorial.autoencoder.AutoEncoder {

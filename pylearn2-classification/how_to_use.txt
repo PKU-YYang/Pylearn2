@@ -1,0 +1,3 @@
+train.py adult_with_wrapper.yaml
+python predict_csv.py softmax_regression.pkl adult/test.csv output.txt -H
+

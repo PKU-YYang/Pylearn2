@@ -1,8 +1,9 @@
 !obj:pylearn2.train.Train {
-    dataset: &train !obj:winequality_red.load_data {
+    dataset: &train !obj:dataset_wrapper.load_data {
         start: 0,
         stop: 1024,
-        path: '../pylearn2-regression/winequality-red.csv'
+        path: '../pylearn2-regression/winequality-red.csv',
+        mode: 'regression',
     },
     model: !obj:pylearn2.models.mlp.MLP {
         layers: [
@@ -44,15 +45,17 @@
         monitoring_dataset:
             {
                 'train' : *train,
-                'valid' : !obj:winequality_red.load_data {
+                'valid' : !obj:dataset_wrapper.load_data {
                             start: 1024,
                             stop: 1280,
-                            path: '../pylearn2-regression/winequality-red.csv'
+                            path: '../pylearn2-regression/winequality-red.csv',
+                            mode: 'regression',
                           },
-                'test'  : !obj:winequality_red.load_data {
+                'test'  : !obj:dataset_wrapper.load_data {
                             start: 1280,
                             stop: 1599,
-                            path: '../pylearn2-regression/winequality-red.csv'
+                            path: '../pylearn2-regression/winequality-red.csv',
+                            mode: 'regression',
                           }
             },
         termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {

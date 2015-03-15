@@ -27,8 +27,8 @@ __license__ = "GPL"
 
 
 #用法：
-#python predict_csv.py softmax_regression_best.pkl adult/test.csv output.txt -L
-#test.csv因为第一列是label，所以这里必须-L
+#python predict_csv.py softmax_regression_best.pkl adult/test.csv output.txt -H
+#test.csv因为第一列有表头，所以要-H
 #这个函数会同时输出prob_matrix和label
 
 
@@ -69,11 +69,11 @@ def make_argument_parser():
     parser.add_argument('--has-row-label', '-L',
                         dest='has_row_label',
                         action='store_true',
-                        help='Indicates the first column in the input file is row labels')
+                        help='Indicates the last column in the input file is row labels')
     return parser
 
 def predict(model_path, test_path, output_path, predictionType="regression", outputType="float",
-            headers=True, first_col_label=False):
+            headers=True, last_col_label=False):
     """
     Predict from a pkl file.
 
@@ -133,8 +133,8 @@ def predict(model_path, test_path, output_path, predictionType="regression", out
     #print(headers,'skiprow=',skiprows)
     x = np.loadtxt(test_path, delimiter=',', skiprows=skiprows)
 
-    if first_col_label:
-        x = x[:,1:]
+    if last_col_label:
+        x = x[:,:-1]
 
     y = f(x)
 

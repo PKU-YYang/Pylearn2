@@ -1,0 +1,2 @@
+train wine.yaml
+python predict_csv.py wine_best.pkl wine_test.csv output.csv -H -P regression -T float

@@ -27,8 +27,10 @@ __license__ = "GPL"
 
 
 #用法：
-#python predict_csv.py wine.pkl wine_test.csv output.csv -H -P regression -T float
-#test.csv不可以有label/value, 带表头要-H
+#python predict_csv.py wine_best.pkl wine_test.csv output.csv -H -P regression -T float
+#test.csv因为第一列有表头，所以要-H
+#这个函数会同时输出prob_matrix和label
+
 
 import sys
 import os
@@ -67,11 +69,11 @@ def make_argument_parser():
     parser.add_argument('--has-row-label', '-L',
                         dest='has_row_label',
                         action='store_true',
-                        help='Indicates the first column in the input file is row labels')
+                        help='Indicates the last column in the input file is row labels')
     return parser
 
 def predict(model_path, test_path, output_path, predictionType="regression", outputType="float",
-            headers=True, first_col_label=False):
+            headers=True, last_col_label=False):
     """
     Predict from a pkl file.
 
@@ -107,12 +109,15 @@ def predict(model_path, test_path, output_path, predictionType="regression", out
     print("setting up symbolic expressions...")
 
     X = model.get_input_space().make_theano_batch()
-    Y = model.fprop(X)
+    Y = model.fprop(X) #label
+    M = model.fprop(X) #Prob
 
     if predictionType == "classification":
-        Y = T.argmax(Y, axis=1)
+        Y = T.argmax(Y, axis=1) #取每行的最大值
 
     f = function([X], Y,allow_input_downcast=True)
+
+    f_prob = function([X], M,allow_input_downcast=True)
 
     print("loading data and predicting...")
 
@@ -128,10 +133,14 @@ def predict(model_path, test_path, output_path, predictionType="regression", out
     #print(headers,'skiprow=',skiprows)
     x = np.loadtxt(test_path, delimiter=',', skiprows=skiprows)
 
-    if first_col_label:
-        x = x[:,1:]
+    if last_col_label:
+        x = x[:,:-1]
 
     y = f(x)
+
+    if predictionType == "classification":
+
+        m=f_prob(x)
 
     print("writing predictions...")
 
@@ -141,6 +150,9 @@ def predict(model_path, test_path, output_path, predictionType="regression", out
 
     #print(variableType)
     np.savetxt(output_path, y, fmt=variableType)
+
+    if predictionType == "classification":
+        np.savetxt("".join(["Prob_",output_path]), m, fmt="%f")
     return True
 
 if __name__ == "__main__":
