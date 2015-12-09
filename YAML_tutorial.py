@@ -21,7 +21,9 @@ YAML不可以用双引号，不可以用\t，只能用空格
 
 #调用YAML：
 fp = open('example1.yaml')
-model = yaml_parse.load(fp) #运行YAML的内容：import+实例化
+model = yaml_parse.load(fp) #运行YAML的内容：import+实例化,this is no going to run
+train_obj = serial.load_train_file(yaml_file) # to run
+train_obj.main_loop()
 print model #__str__属性是Print专属的
 model.save('example3_weights.pkl')
 fp.close()
